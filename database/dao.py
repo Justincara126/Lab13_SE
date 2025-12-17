@@ -39,28 +39,29 @@ class DAO:
         cursor = DB.cursor(dictionary=True)
         cursor.execute("SELECT * FROM interazione")
         result = {}
+        print(1)
         dizionario_connessioni={}
         try:
             for row in cursor:
                 connessione = Interazione(**row)
-                gene1=dizionario_geni[connessione.id_gene1]
-                gene2=dizionario_geni[connessione.id_gene2]
-                if (gene1, gene2) in result:
-                    if dizionario_connessioni[(gene1, gene2)]==connessione.correlazione:
-                        pass
-                    else:
-
-                        result[(gene1, gene2)] = result[(gene1, gene2)] + connessione.correlazione
-                        print(result[(gene1, gene2)])
+                gene1=dizionario_geni[connessione.id_gene1].cromosoma
+                gene2=dizionario_geni[connessione.id_gene2].cromosoma
+                if gene1==gene2:
+                    pass
                 else:
-                    result[(gene1, gene2)] = connessione.correlazione
-                    dizionario_connessioni[(gene1, gene2)] = connessione.correlazione
+                    if (gene1, gene2) in result:
+                        if dizionario_connessioni[(gene1, gene2)]==connessione.correlazione:
+                            pass
+
+                        else:
+                            result[(gene1, gene2)]+=connessione.correlazione
+                            print(result[(gene1, gene2)])
+                    else:
+                        result[(gene1, gene2)] = connessione.correlazione
+                        dizionario_connessioni[(gene1, gene2)] = connessione.correlazione
             cursor.close()
             DB.close()
         except KeyError:
             pass
-
-
-
         return result
 

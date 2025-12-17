@@ -42,3 +42,34 @@ class Controller:
     def handle_ricerca(self, e):
         """ Handler per gestire il problema ricorsivo di ricerca del cammino """""
         # TODO
+        def handle_cammino_minimo(self, e):
+            if not self._model.G:
+                self._view.show_alert("Inserisci prima un numero valido per la soglia")
+            else:
+                soglia = float(self._view.txt_soglia.value)
+                percorso_migliore = self._model.calcola_percorso_massimo()  # ritorna una lista
+                print(percorso_migliore)
+                # for i in percorso_migliore:
+                #    print(i)
+
+                self._view.lista_visualizzazione_3.controls.clean()
+                if percorso_migliore == []:
+                    self._view.lista_visualizzazione_3.controls.append(
+                        ft.Text(f'Nessun percorso trovato , inserire una soglia più bassa'))
+
+                else:
+                    for i in range(len(percorso_migliore) - 1):
+                        u = percorso_migliore[i]
+                        v = percorso_migliore[i + 1]
+
+                        if self._model.G.has_edge(u, v):
+                            nodo_partenza = self._model.dizionario_rifugi[u]
+                            nodo_arrivo = self._model.dizionario_rifugi[v]
+                            peso_arco = self._model.G[u][v]['weight']
+                            print(nodo_partenza)
+                            print(nodo_arrivo)
+
+                            self._view.lista_visualizzazione_3.controls.append(
+                                ft.Text(f'{nodo_partenza}   ----->   {nodo_arrivo}'
+                                        f':   {peso_arco}'))
+            self.page.update()

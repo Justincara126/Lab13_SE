@@ -10,6 +10,7 @@ class Model:
         self.G = nx.DiGraph()
         self.dizionario_geni=self.get_geni()
         self.dizionario_localizzazioni=self.get_localizzazioni()
+        self.percorso_migliore=[]
         #self.interazioni=self.costruisci_grafo()
     def get_geni(self):
         return DAO.search_all_gene()
@@ -21,15 +22,15 @@ class Model:
         #print(dizionario_connessioni_pesate)
         for coppia_geni in dizionario_connessioni_pesate:
             #print(coppia_geni,dizionario_connessioni_pesate[coppia_geni])
-            nodo1=coppia_geni[0].cromosoma
-            nodo2=coppia_geni[1].cromosoma
+            nodo1=coppia_geni[0]
+            nodo2=coppia_geni[1]
             #print(nodo1,nodo2)
             if dizionario_connessioni_pesate[coppia_geni]==0:
                 pass
             else:
                 self.G.add_edge(nodo1,nodo2,weight=dizionario_connessioni_pesate[coppia_geni])
-        #for u,v,peso in self.G.edges(data=True):
-            #print(u,v,peso)
+        for u,v,peso in self.G.edges(data=True):
+            print(u,v,peso)
         return self.G
     def get_estremi(self):
         min=1000000
@@ -55,7 +56,31 @@ class Model:
                 uguali += 1
         # print(minori,maggiori,uguali)
         return minori, maggiori
+    def calcola_percorso_massimo(self):
 
+        percorso_migliore = None
+        massima_distanza = 0
+        nodi = list(self.G.nodes())
+
+        # MODO 1 ALGORITMO DIJKSTRA
+
+        for i in range(len(nodi)):
+            for j in range(i + 1, len(nodi)):
+                u = nodi[i]
+                v = nodi[j]
+                print(1)
+                try:
+                    distanza = nx.dijkstra_path_length(self.G, u, v, weight='weight')
+                    percorso_migliore = nx.dijkstra_path(self.G, u, v, weight='weight')
+
+                    if (distanza > massima_distanza or massima_distanza == 0):
+                        self.percorso_migliore = percorso_migliore
+                        massima_distanza = distanza
+
+                except nx.NetworkXNoPath:
+                    continue
+        print(self.percorso_migliore)
+        return self.percorso_migliore
 
 
 
